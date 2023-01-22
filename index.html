@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style/style.css">
+    <title>FindTheNumber</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Trouver le nombre</h1>
+        <p>L'objectif du jeu est de deviner un nombre entre 1 et 100</p>
+        <div class="flex-container-row">
+            <div class="flex-container-col">
+                <div class="gameLevel">
+                    <label for="level">Niveau</label>
+                    <select class="level_1" name="" id="level" onchange="affecteClasseLevel()">
+                        <option value="1" selected>Facile</option>
+                        <option value="2">Moyen</option>
+                        <option value="3">Difficile</option>
+                    </select>
+                </div>
+                <div class="test-reponses">
+                    <label for="reponse">Votre réponse</label>
+                    <input type="number" id="reponse">
+                    <button onclick="testReponse()" id="btnReponse">Tester ma réponse</button>
+                </div>
+                <div class="box-essais" id="essais">
+                    <label>Il vous reste</label>
+                    <div class="essais">
+                        <label id="countDown"></label>
+                    </div>
+                    <label>Essais</label>
+                </div>
+            </div>
+            <div>
+                <label id="tentatives">Nombre de tentatives</label><br>
+                <div id="reponses" class="historique">
+                </div>
+                <label id="message"></label>
+            </div>
+            <div>
+                <h2 id="finalResult"></h2>
+            </div>
+        </div>
+        <button class="newgame" onclick="startTheGame()">Recommencer</button>
+    </div>
+</body>
+<script>
+    let tentatives=0;
+    let theNumber=Math.floor(Math.random()*100) + 1;
+    let gameLevel=eval(document.getElementById("level").value);
+    let essais=maxTentatives(gameLevel);
+    
+    const elFinal=document.getElementById("finalResult");
+    const elTentatives=document.getElementById("tentatives");
+    const elCountDown=document.getElementById("countDown");
+    const elMauvaisesReponses=document.getElementById("reponses");
+    const elBtnReponse=document.getElementById("btnReponse");
+    const elEssais=document.getElementById("essais");
+
+    elCountDown.innerHTML=essais;
+
+    function startTheGame(){
+        gameLevel=eval(document.getElementById("level").value);
+        essais=maxTentatives(gameLevel);
+        tentatives=0;
+        theNumber=Math.floor(Math.random()*100) + 1
+        elCountDown.innerHTML=essais;
+        elMauvaisesReponses.innerHTML="";
+        elTentatives.innerHTML=`Nombre de tentatives: ${tentatives}`;
+        document.getElementById("reponse").value="";
+        elBtnReponse.style.display="block";
+        elEssais.style.display="flex";
+        elFinal.style.display="none";
+    }
+
+    function maxTentatives(gameLevel){
+        switch(gameLevel){
+            case 1:
+                return 15;
+                break;
+            
+            case 2:
+                return 10;
+                break;
+
+            case 3:
+                return 5;
+                break;
+
+            default:
+                return 15;
+        }
+    }
+
+    function testReponse(){
+        tentatives +=1;
+        essais -=1;
+        const myGuess=document.getElementById("reponse").value;
+
+        if (myGuess==theNumber){
+            elCountDown.innerHTML="";
+            elFinal.style.display="block";
+            elFinal.innerHTML="Bravo, vous avez gagné!";
+            elFinal.classList.remove("finalKO");
+            elFinal.classList.add("finalOK");
+            elBtnReponse.style.display="none";
+            elEssais.style.display="none";
+        }else{
+            if(essais==0){
+                elCountDown.innerHTML="";
+                elFinal.style.display="block";
+                elFinal.innerHTML="Désolé, vous avez perdu!";
+                elFinal.classList.remove("finalOK");
+                elFinal.classList.add("finalKO");
+                elBtnReponse.style.display="none";
+                elEssais.style.display="none";
+            }else{
+                elCountDown.innerHTML=essais;
+                elFinal.innerHTML="";
+                if(myGuess>theNumber){
+                    elMauvaisesReponses.innerHTML += `<p>${myGuess} (trop grand)</p>`;
+                }else{
+                    elMauvaisesReponses.innerHTML += `<p>${myGuess} (trop petit)</p>`;
+                }
+            }
+        }
+        elTentatives.innerHTML=`Nombre de tentatives: ${tentatives}`;
+        document.getElementById("reponse").value="";
+    }
+
+    function affecteClasseLevel(){
+        let gameLevel=eval(document.getElementById("level").value);
+        let elLevel= document.getElementById("level")
+        essais=maxTentatives(gameLevel);
+        
+        switch(gameLevel){
+            case 1:
+                elLevel.classList.remove("level_2");
+                elLevel.classList.remove("level_3");
+                elLevel.classList.add("level_1");
+                break;
+
+            case 2:
+                elLevel.classList.remove("level_1");
+                elLevel.classList.add("level_2");
+                elLevel.classList.remove("level_1");
+                break;
+
+            case 3:
+                elLevel.classList.remove("level_1");
+                elLevel.classList.remove("level_2");
+                elLevel.classList.add("level_3");
+                break;
+        }
+        elCountDown.innerHTML=essais;
+    }
+</script>
+</html>
